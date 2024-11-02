@@ -8,5 +8,9 @@
   },
   "author": "Serhii Savchenko",
   "license": "ISC",
-  "description": ""
+  "description": "",
+  "dependencies": {
+    "main-project-nodejs": "file:",
+    "nodemon": "^3.1.7"
+  }
 }
