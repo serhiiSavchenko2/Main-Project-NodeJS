@@ -4,12 +4,14 @@
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node app.js"
+    "start": "nodemon app.js"
   },
   "author": "Serhii Savchenko",
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "body-parser": "^1.20.3",
+    "express": "^4.21.1",
     "main-project-nodejs": "file:",
     "nodemon": "^3.1.7"
   }
