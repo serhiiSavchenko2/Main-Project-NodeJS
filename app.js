@@ -2,8 +2,9 @@ const path = require('path');
 const http = require('http');
 const express = require('express');
 const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
 
-const mongoConnect = require('./util/database').mongoConnect;
+// const mongoConnect = require('./util/database').mongoConnect;
 const User = require('./models/user');
 
 const app = express();
@@ -20,9 +21,9 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use((req, res, next) => {
-    User.findById('67e7e74045c005e00c2cd1ac')
+    User.findById('67fa56b9099525f6a0e062d5')
         .then(user => {
-            req.user = new User(user.username, user.email, user._id, user.cart);
+            req.user = user;
             next();
         })
         .catch(err => console.log(err));
@@ -34,8 +35,24 @@ app.use(shopRoutes);
 
 app.use(errorController.get404);
 
-mongoConnect(() => {
-    app.listen(8100);
-});
+mongoose
+    .connect('mongodb+srv://serhiisavchenko2:<Pass>@cluster0.aw9rm.mongodb.net/shop?retryWrites=true')
+    .then(result => {
+        User.findOne().then(user => {
+            if (!user) {
+                const user = new User({
+                    name: 'Serhii',
+                    email: 'test@test.com',
+                    cart: {
+                        items: []
+                    }
+                });
+                user.save();
+            }
+        });
+        app.listen(8100);
+    })
+    .catch(err => console.log(err));
 
 //db password: mysql555
+//mongodb+srv://serhiisavchenko2:<Pass>@cluster0.aw9rm.mongodb.net/shop?retryWrites=true
