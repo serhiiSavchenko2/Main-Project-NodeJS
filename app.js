@@ -15,6 +15,7 @@ app.set('views', 'views');
 
 const adminRoutes = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
+const authRoutes = require('./routes/auth');
 
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(express.static(path.join(__dirname, 'public')));
@@ -31,11 +32,12 @@ app.use((req, res, next) => {
 
 app.use('/admin', adminRoutes);
 app.use(shopRoutes);
+app.use(authRoutes);
 
 app.use(errorController.get404);
 
 mongoose
-    .connect('mongodb+srv://serhiisavchenko2:<Pass>@cluster0.aw9rm.mongodb.net/shop?retryWrites=true')
+    .connect('mongodb+srv://serhiisavchenko2:<pass>@cluster0.aw9rm.mongodb.net/shop?retryWrites=true')
     .then(result => {
         User.findOne().then(user => {
             if (!user) {
@@ -54,4 +56,4 @@ mongoose
     .catch(err => console.log(err));
 
 //db password: mysql555
-//mongodb+srv://serhiisavchenko2:<Pass>@cluster0.aw9rm.mongodb.net/shop?retryWrites=true
+//mongodb+srv://serhiisavchenko2:<pass>@cluster0.aw9rm.mongodb.net/shop?retryWrites=true
