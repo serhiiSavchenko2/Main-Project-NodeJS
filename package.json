@@ -11,9 +11,11 @@
   "description": "",
   "dependencies": {
     "body-parser": "^1.20.3",
+    "connect-mongodb-session": "^5.0.0",
     "ejs": "^3.1.10",
     "express": "^4.21.1",
     "express-handlebars": "3.0",
+    "express-session": "^1.18.1",
     "main-project-nodejs": "file:",
     "mongodb": "^6.14.2",
     "mongoose": "^8.13.2",
