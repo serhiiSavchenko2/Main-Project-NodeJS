@@ -5,6 +5,7 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const session = require('express-session');
 const MongoDBStore = require('connect-mongodb-session')(session);
+const csrf = require('csurf');
 
 const User = require('./models/user');
 const MONGODB_URI = 'mongodb+srv://serhiisavchenko2:<pass>@cluster0.aw9rm.mongodb.net/shop';
@@ -14,6 +15,7 @@ const store = new MongoDBStore({
     uri: MONGODB_URI,
     collection: 'sessions'
 });
+const csrfProtection = csrf();
 
 const errorController = require('./controllers/error');
 
@@ -37,15 +39,20 @@ app.use(
     )
 );
 
-// app.use((req, res, next) => {
-//     User.findById('67fa56b9099525f6a0e062d5')
-//         .then(user => {
-//             req.user = user;
-//             next();
-//         })
-//         .catch(err => console.log(err));
-//     //next();
-// });
+app.use(csrfProtection);
+
+app.use((req, res, next) => {
+    if (!req.session.user) {
+        return next();
+    }
+    User.findById(req.session.user._id)
+        .then(user => {
+            req.user = user;
+            next();
+        })
+        .catch(err => console.log(err));
+    //next();
+});
 
 app.use('/admin', adminRoutes);
 app.use(shopRoutes);
@@ -56,18 +63,6 @@ app.use(errorController.get404);
 mongoose
     .connect(MONGODB_URI)
     .then(result => {
-        User.findOne().then(user => {
-            if (!user) {
-                const user = new User({
-                    name: 'Serhii',
-                    email: 'test@test.com',
-                    cart: {
-                        items: []
-                    }
-                });
-                user.save();
-            }
-        });
         app.listen(8100);
     })
     .catch(err => console.log(err));
