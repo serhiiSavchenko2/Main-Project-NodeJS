@@ -4,19 +4,17 @@ exports.getAddProduct = (req, res, next) => {
     res.render('admin/edit-product', {
         pageTitle: 'Add Product',
         path: '/admin/add-product',
-        editing: false,
-        isAuth: req.session.isLoggedIn
+        editing: false
     });
 };
 
 exports.getProducts = (req, res, next) => { 
-    Product.find()
+    Product.find({userId: req.user._id})
         .then(products => {
             res.render('admin/product-list', {
                 prods: products,
                 pageTitle: 'Admin Products',
-                path: '/admin/products',
-                isAuth: req.session.isLoggedIn
+                path: '/admin/products'
             });
         })
         .catch(err => console.log(err));
@@ -73,22 +71,24 @@ exports.postEditProduct = (req, res, next) => {
 
     Product.findById(updated_id)
         .then(product => {
+            if (product.userId.toString() !== req.user._id.toString()) {
+                return res.redirect('/');
+            }
             product.title = updated_title;
             product.price = updated_price;
             product.description = updated_description;
             product.imageUrl = updated_imageUrl;
-            return product.save();
-        })
-        .then(result => {
-            console.log('Updated product!');
-            res.redirect('/admin/products');
+            return product.save().then(result => {
+                console.log('Updated product!');
+                res.redirect('/admin/products');
+            });
         })
         .catch(err => console.log(err));
 };
 
 exports.postDeleteProduct = (req, res, next) => {
     const prodId = req.body.productId;
-    Product.findByIdAndDelete(prodId)
+    Product.deleteOne({ _id: prodId, userId: req.user._id })
         .then(result => {
             console.log('Product deleted!');
             res.redirect('/admin/products');
