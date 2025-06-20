@@ -19,6 +19,7 @@
     "express": "^4.21.1",
     "express-handlebars": "3.0",
     "express-session": "^1.18.1",
+    "express-validator": "^7.2.1",
     "main-project-nodejs": "file:",
     "mongodb": "^6.14.2",
     "mongoose": "^8.13.2",
