@@ -1,10 +1,15 @@
+const { validationResult } = require('express-validator');
+
 const Product = require('../models/product');
 
 exports.getAddProduct = (req, res, next) => {
     res.render('admin/edit-product', {
         pageTitle: 'Add Product',
         path: '/admin/add-product',
-        editing: false
+        editing: false,
+        hasError: false,
+        errorMessage: null,
+        validationErrors: []
     });
 };
 
@@ -25,6 +30,26 @@ exports.postAddProduct = (req, res, next) => {
     const imageUrl = req.body.imageUrl; 
     const description = req.body.description;
     const price = req.body.price;
+
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+        return res.status(422).render('admin/edit-product', {
+            pageTitle: 'Add Product',
+            path: '/admin/add-product',
+            editing: false,
+            hasError: true,
+            product: {
+                title: title,
+                imageUrl: imageUrl,
+                description: description,
+                price: price
+            },
+            errorMessage: errors.array()[0].msg,
+            validationErrors: errors.array()
+        });
+    }
+
     const product = new Product({
         title: title,
         imageUrl: imageUrl,
@@ -55,8 +80,10 @@ exports.getEditProduct = (req, res, next) => {
                 pageTitle: 'Update Product',
                 path: '/admin/edit-product',
                 editing: editMode,
+                hasError: false,
                 product: product,
-                isAuth: req.session.isLoggedIn
+                errorMessage: null,
+                validationErrors: []
             })
         })
         .catch(err => console.log(err));
@@ -68,6 +95,26 @@ exports.postEditProduct = (req, res, next) => {
     const updated_imageUrl = req.body.imageUrl;
     const updated_description = req.body.description;
     const updated_price = req.body.price;
+
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+        return res.status(422).render('admin/edit-product', {
+            pageTitle: 'Update Product',
+            path: '/admin/edit-product',
+            editing: true,
+            hasError: true,
+            product: {
+                title: updated_title,
+                imageUrl: updated_imageUrl,
+                description: updated_description,
+                price: updated_price,
+                _id: updated_id
+            },
+            errorMessage: errors.array()[0].msg,
+            validationErrors: errors.array()
+        });
+    }
 
     Product.findById(updated_id)
         .then(product => {
