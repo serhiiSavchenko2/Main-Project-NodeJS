@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const stripe = require('stripe')('');
 
 const PDFDocument = require('pdfkit');
 
@@ -135,6 +136,42 @@ exports.postCartDelete = (req, res, next) => {
         .deleteItemFromCart(prodId)
         .then(result => {
             res.redirect('/cart');
+        })
+        .catch(err => {
+            const error = new Error(err);
+            error.httpStatusCode = 500;
+            return next(error);
+        });
+};
+
+exports.getCheckout = (req, res, next) => {
+    let products;
+    let total = 0;
+    req.user
+        .populate('cart.items.productId')
+        .then(user => {
+            products = user.cart.items;
+            total = 0;
+            products.forEach(p => {
+                total += p.quantity * p.productId.price;
+            });
+            return stripe.checkout.sessions.create({
+                payment_method_types: ['card'],
+                line_items: products.map(p => {
+                    return {
+                        
+                    }
+                }),
+            });
+        })
+        .then(session => {
+            res.render('shop/checkout', {
+                path: '/checkout',
+                pageTitle: 'Checkout',
+                products: products,
+                totalSum: total,
+                sessionId: session.id
+            });
         })
         .catch(err => {
             const error = new Error(err);
