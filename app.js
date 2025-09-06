@@ -1,5 +1,6 @@
 const path = require('path');
-const http = require('http');
+const https = require('https');
+const fs = require('fs');
 const express = require('express');
 const bodyParser = require('body-parser');
 const multer = require('multer');
@@ -8,9 +9,12 @@ const session = require('express-session');
 const MongoDBStore = require('connect-mongodb-session')(session);
 const csrf = require('csurf');
 const flash = require('connect-flash');
+const helmet = require('helmet');
+const compression = require('compression');
+const morgan = require('morgan');
 
 const User = require('./models/user');
-const MONGODB_URI = 'mongodb+srv://serhiisavchenko2:<pass>@cluster0.aw9rm.mongodb.net/shop';
+const MONGODB_URI = `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@cluster0.aw9rm.mongodb.net/${process.env.MONGO_DB_NAME}`;
 
 const app = express();
 const store = new MongoDBStore({
@@ -18,6 +22,9 @@ const store = new MongoDBStore({
     collection: 'sessions'
 });
 const csrfProtection = csrf();
+
+// const privateKey = fs.readFileSync('server.key');
+// const certificate = fs.readFileSync('server.cert');
 
 const errorController = require('./controllers/error');
 
@@ -44,6 +51,14 @@ app.set('views', 'views');
 const adminRoutes = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
 const authRoutes = require('./routes/auth');
+
+const accessLogStream = fs.createWriteStream(
+    path.join(__dirname, 'access.log'), { flags: 'a' }
+);
+
+app.use(helmet());
+app.use(compression());
+app.use(morgan('combined', { stream: accessLogStream }));
 
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(multer({storage: fileStorage, fileFilter: fileFilter}).single('image'));
@@ -100,9 +115,9 @@ app.use((error, req, res, next) => {
 mongoose
     .connect(MONGODB_URI)
     .then(result => {
-        app.listen(8100);
+        // https
+        //     .createServer({ key: privateKey, cert: certificate }, app)
+        //     .listen(process.env.PORT || 8100);
+        app.listen(process.env.PORT || 8100);
     })
     .catch(err => console.log(err));
-
-//db password: mysql555
-//KIpOt0KETY2ddeeS

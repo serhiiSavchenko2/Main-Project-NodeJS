@@ -2,9 +2,13 @@
   "name": "main-project-nodejs",
   "version": "1.0.0",
   "main": "app.js",
+  "engines": {
+    "node": "23.11.0"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon app.js"
+    "start": "cross-env MONGO_USER=serhiisavchenko2 MONGO_PASSWORD=KIpOt0KETY2ddeeS MONGO_DB_NAME=shop STRIPE_KEY=sk_test_51RuBEnRpSnX4Z56THQia3RzthkNhgQ4jldF1yJWIrw7CBHYx1BobzmR7PltqdAhDDoOovofPZdh5QToHgQSO0SE400nQMX7Jbi SENDGRID_KEY=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 node app.js",
+    "start:dev": "nodemon app.js"
   },
   "author": "Serhii Savchenko",
   "license": "ISC",
@@ -12,6 +16,7 @@
   "dependencies": {
     "bcryptjs": "^3.0.2",
     "body-parser": "^1.20.3",
+    "compression": "^1.8.1",
     "connect-flash": "^0.1.1",
     "connect-mongodb-session": "^5.0.0",
     "csurf": "^1.11.0",
@@ -20,17 +25,22 @@
     "express-handlebars": "3.0",
     "express-session": "^1.18.1",
     "express-validator": "^7.2.1",
+    "helmet": "^8.1.0",
     "main-project-nodejs": "file:",
     "mongodb": "^6.14.2",
     "mongoose": "^8.13.2",
+    "morgan": "^1.10.1",
     "multer": "^2.0.1",
     "mysql2": "^3.12.0",
     "nodemailer": "^7.0.3",
     "nodemailer-sendgrid-transport": "^0.2.0",
-    "nodemon": "^3.1.7",
     "pdfkit": "^0.17.1",
     "pug": "^3.0.3",
     "sequelize": "^6.37.5",
     "stripe": "^18.4.0"
+  },
+  "devDependencies": {
+    "cross-env": "^10.0.0",
+    "nodemon": "^3.1.7"
   }
 }
